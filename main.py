@@ -3,11 +3,12 @@ from machine import ADC, Pin
 import time
 start = time.ticks_ms()
 
-# sensor = ADC(Pin(32))
-# sensor.atten(ADC.ATTN_11DB)
+sensor = ADC(Pin(32))
+sensor.atten(ADC.ATTN_11DB)
 # while True:
 #     print(sensor.read())
 #     time.sleep(0.2)
+
 # import time, ds18x20, onewire
 # ow = onewire.OneWire(Pin(27, Pin.IN, Pin.PULL_UP))
 # ds = ds18x20.DS18X20(ow)
@@ -37,7 +38,7 @@ if not wlan.isconnected():
     while not wlan.isconnected():
         pass
 print('network config:', wlan.ifconfig(),"\tconnected!")
-host_ip = "192.168.100.7"
+host_ip = "192.168.100.102"
 print("connecting to server with ip", host_ip,"...")
 
 #open socket
@@ -49,14 +50,14 @@ sock.connect(addr)
 print("compressing data into json and sending it...")
 import ujson
 payload = ujson.dumps(
-    [d.temperature(), d.humidity()]
+    [d.temperature(), d.humidity(), sensor.read()]
 )
 sock.send(str(payload))
 sock.close()
 print("\tYAY! success! sent:\n", payload)
 
 #bye bye
-print("going to deep sleep within 3 secs...")
-time.sleep(3)
+print("going to deep sleep")
+# time.sleep(3)
 print("Zzzz.... execution took: ", time.ticks_diff(time.ticks_ms(), start))
-machine.deepsleep(5000)
+machine.deepsleep(900000)
